@@ -96,6 +96,10 @@ tool and see what dynamic it produces. Please test your feeds first, see how it
 looks, see what content the feed provides and ofc, see if it "fits" being
 plugged into SSB.
 
+Some prior art (discovered after publishing the tool):
+
+- `%0B1nY9hSwKV9rieJGug2mB3qFuaWksXt5/Zh7n63odk=.sha256`
+
 ## Internal features :computer:
 
 Some internal things that might be nice to know / refer to if also hacking on
