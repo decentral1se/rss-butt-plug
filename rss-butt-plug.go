@@ -32,14 +32,15 @@ import (
 
 // Config is a rss-butt-plug config file.
 type Config struct {
-	DataDir string      `yaml:"data-dir"`
-	Feed    string      `yaml:"feed"`
-	Addr    string      `yaml:"addr"`
-	Port    string      `yaml:"port"`
-	WsPort  string      `yaml:"ws-port"`
-	ShsCap  string      `yaml:"shs-cap"`
-	KeyPair ssb.KeyPair `yaml:"key-pair,omitempty"`
-	Avatar  string      `yaml:"avatar,omitempty"`
+	DataDir string `yaml:"data-dir"`
+	Feed    string `yaml:"feed"`
+	Addr    string `yaml:"addr"`
+	Port    string `yaml:"port"`
+	WsPort  string `yaml:"ws-port"`
+	ShsCap  string `yaml:"shs-cap"`
+	Hops    uint   `yaml:"hops"`
+	Poll    int    `yaml:"poll"`
+	Avatar  string `yaml:"avatar,omitempty"`
 }
 
 // Post is a ssb post message.
@@ -64,6 +65,8 @@ addr: localhost
 port: 8008
 ws-port: 8989
 shs-cap: "1KHLiKZvAvjbY1ziZEHMXawbCEIM6qwjCDm3VYRan/s="
+hops: 1
+poll: 5
 avatar: https://images.opencollective.com/secure-scuttlebutt-consortium/676f245/logo/256.png
 
 Arguments:
@@ -72,7 +75,6 @@ Arguments:
 Options:
   -h    output help
   -c    path to config file
-  -p    feed poll frequency in minutes
 `
 
 // maxPostLength is a post limit set by rss-butt-plug which is smaller than the
@@ -83,13 +85,11 @@ const maxPostLength = 7000
 var helpFlag bool
 var debugFlag bool
 var configFlag string
-var pollFrequencyFlag int
 
 // handleCliFlags parses CLI flags.
 func handleCliFlags() error {
 	flag.BoolVar(&helpFlag, "h", false, "output help")
 	flag.StringVar(&configFlag, "c", "rss-butt-plug.yaml", "config file")
-	flag.IntVar(&pollFrequencyFlag, "p", 5, "feed poll frequency in minutes")
 	flag.Parse()
 
 	return nil
@@ -287,7 +287,7 @@ func newSbot(cfg Config) (*sbot.Sbot, error) {
 		sbot.EnableAdvertismentBroadcasts(true),
 		sbot.EnableAdvertismentDialing(true),
 		sbot.LateOption(sbot.WithUNIXSocket()),
-		sbot.WithHops(2),
+		sbot.WithHops(cfg.Hops),
 		sbot.WithListenAddr(fmt.Sprintf(":%s", cfg.Port)),
 		sbot.WithRepoPath(dataDir),
 		sbot.WithWebsocketAddress(fmt.Sprintf(":%s", cfg.WsPort)),
@@ -555,7 +555,6 @@ func main() {
 
 	log.Print("main: bootstrapped internally managed go-sbot")
 
-	cfg.KeyPair = pub.KeyPair
 	feed, err := parseRSSFeed(cfg.Feed)
 	if err != nil {
 		log.Fatal(err)
@@ -601,8 +600,8 @@ func main() {
 	log.Printf("main: pub invite: %s", token)
 
 	for {
-		log.Printf("main: going to sleep for %d minutes...", pollFrequencyFlag)
-		time.Sleep(time.Duration(pollFrequencyFlag) * time.Minute)
+		log.Printf("main: going to sleep for %d minutes...", cfg.Poll)
+		time.Sleep(time.Duration(cfg.Poll) * time.Minute)
 		log.Printf("main: waking up to poll %s for new posts", cfg.Feed)
 
 		posts, err := messagesFromLog(pub)

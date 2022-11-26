@@ -38,11 +38,15 @@ feed: https://openrss.org/opencollective.com/secure-scuttlebutt-consortium/updat
 # the RSS feed profile avatar URL (will be converted to blob)
 avatar: https://images.opencollective.com/secure-scuttlebutt-consortium/676f245/logo/256.png
 
+# RSS feed poll frequency (minutes)
+poll: 5
+
 # the internal go-sbot configuration options
 addr: localhost
 port: 8008
 ws-port: 8989
 shs-cap: "1KHLiKZvAvjbY1ziZEHMXawbCEIM6qwjCDm3VYRan/s="
+hops: 1
 ```
 
 Run it:
@@ -58,7 +62,7 @@ for reading & sharing with the broader SSB ecosystem.
 
 `rss-butt-plug` generates an invite every time it runs which you can use to
 invite clients with. Feeds will be polled every 5 minutes by default, you can
-configure this with `-p`.
+configure this.
 
 ## Limitations :stop_sign:
 
