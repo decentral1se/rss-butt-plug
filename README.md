@@ -147,5 +147,5 @@ tools.
 ## LICENSE
 
 <a href="https://git.coopcloud.tech/decentral1se/rss-butt-plug/src/branch/main/LICENSE">
-  <img src="https://www.gnu.org/graphics/gplv3-or-later.png" />
+  <img src="https://www.gnu.org/graphics/gplv3-with-text-136x68.png" />
 </a>
